@@ -7,6 +7,7 @@ import sun.misc.BASE64Encoder;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.UUID;
 
 /**
  * RSA加解密工具测试类
@@ -22,8 +23,10 @@ public class RSAUtil2Test {
      */
     @Test
     public void testEncryption() throws Exception {
-        String data = "RSA加密数据有长度限制，使用AES加密数据得到加密Data和KEY，使用RSA加密KEY得到加密Key，数据传输使用加密Key和加密Data，解密Data使用KEY";
+        String data = "由于RSA加密数据有长度限制，此处利用随机生成的uuid作为明文key，使用RSA加密key得到密文key，使用AES方式加密数据得到密文data，数据传输使用密文key和密文data，解密密文data使用解密后的明文key";
         System.out.println("data.getBytes().length:" + data.getBytes().length);
+        String aesKey = UUID.randomUUID().toString();
+        String iv = "abcdefghijklmnop";
         // 密钥库
         KeyStore keyStore = RSAUtil2.loadKeyStore("test.keystore", "123456");
         // 私钥
@@ -32,16 +35,27 @@ public class RSAUtil2Test {
         PublicKey publicKey_server = keyStore.getCertificate("test").getPublicKey();
         // 公钥：客户端的公钥是通过证书获得
         PublicKey publicKey_client = RSAUtil2.loadCertificate("test.crt").getPublicKey();
-        // 加密
-        byte[] encryptData = RSAUtil2.encrypt(privateKey, data.getBytes());
-        // Base64编码后传输
-        String encryptDataString = new BASE64Encoder().encode(encryptData);
-        // 解密
-        byte[] decryptData = RSAUtil2.decrypt(publicKey_client, new BASE64Decoder().decodeBuffer(encryptDataString));
 
-        System.out.println("加密前:" + data);
-        System.out.println("加密后:" + encryptDataString);
-        System.out.println("解密后:" + new String(decryptData));
+        // RSA加密Key
+        byte[] encryptKeyBytes = RSAUtil2.encrypt(privateKey, aesKey.getBytes());
+        // Base64编码后传输
+        String encryptKey = new BASE64Encoder().encode(encryptKeyBytes);
+        // AES加密Data
+        byte[] encryptDataBytes = AESUtil.encrypt(data.getBytes(), aesKey.getBytes(), iv.getBytes());
+        // Base64编码后传输
+        String encryptData = new BASE64Encoder().encode(encryptDataBytes);
+
+        // RSA解密Key
+        byte[] decryptKey = RSAUtil2.decrypt(publicKey_client, new BASE64Decoder().decodeBuffer(encryptKey));
+        byte[] decryptData = AESUtil.decrypt(encryptDataBytes, decryptKey, iv.getBytes());
+
+        System.out.println("明文key：\n" + aesKey);
+        System.out.println("明文data：\n" + data);
+        System.out.println("密文key：\n" + encryptKey);
+        System.out.println("密文data：\n" + encryptKey);
+        System.out.println("密文key&密文data（用于传输）：\n" + encryptKey + "&" + encryptData);
+        System.out.println("解密key：\n" + new String(decryptKey));
+        System.out.println("解密data：\n" + new String(decryptData));
     }
 
 }
