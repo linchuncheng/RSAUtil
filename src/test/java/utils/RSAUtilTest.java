@@ -1,4 +1,4 @@
-package jensvn.utils;
+package utils;
 
 import org.junit.jupiter.api.Test;
 import sun.misc.BASE64Decoder;
@@ -30,7 +30,11 @@ public class RSAUtilTest {
      */
     @Test
     public void testEncryption() throws Exception {
-        String data = "..123ABC加解密测试";
+        String data = "RSA加密数据有长度限制，使用AES加密数据得到加密Data和KEY，使用RSA加密KEY得到加密Key，数据传输使用加密Key和加密DataRSA加密数据有长度限制，使" +
+                "用AES加密数据得到加密Data和KEY，使用RSA加密KEY得到加密Key，数据传输使用加密Key和加密DataRSA加密数据有长度限制，使用AES加密数据得到加密Data和KEY，使用RS" +
+                "A加密KEY得到加密Key，数据传输使用加密Key和加密DataRSA加密数据有长度限制，使用AES加密数据得到加密Data和KEY，使用RSA加密KEY得到加密Key，数据传输使用加密Key和" +
+                "加密DataRSA加密数据有长度限制，使用AES加密数据得到加密Data和KEY，使用RSA加密KEY得到加密Key，数据传输使用加密Key和加密DataRSA加密数据有长度限制，使用AES加密数" +
+                "Key，数据传输使用加密Key和加密DataRSA加密数据有长度限制，使用AES加密数据得到加密Data和KEY，使用RSA加密KEY得到加密Key，数据传输使用加密Key和加密Data";
         // 加载私钥、公钥
         PrivateKey privateKey = RSAUtil.loadPrivateKey("test.prikey");
         PublicKey publicKey = RSAUtil.loadPublicKey("test.pubkey");
