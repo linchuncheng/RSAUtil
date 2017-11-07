@@ -9,7 +9,7 @@ import java.security.SecureRandom;
 /**
  * AES加密工具类
  *
- * @author 林春成 on 2017/11/6.
+ * @author jensvn@qq.com on 2017/11/6.
  */
 public class AESUtil {
 
